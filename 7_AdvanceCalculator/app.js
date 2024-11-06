@@ -29,7 +29,6 @@ const numberElementArray = [
   number5Element, number6Element, number7Element, number8Element, number9Element
 ];
 
-
 // variables
 let valueStringInMemory = null;
 let operatorInMemory = null;
@@ -92,12 +91,37 @@ const handleOperatorClick = (operation) => {
   setStringAsValue('0');
 };
 
-// Add EventListeners to functions
-acElement.addEventListener('click', () => {
+const handleEqualClick = () => {
+  if (valueStringInMemory) {
+    setStringAsValue(getResultOfOperationAsString());
+    valueStringInMemory = null;
+    operatorInMemory = null;
+  }
+};
+
+const handleACClick = () => {
   setStringAsValue('0');
   valueStringInMemory = null;
   operatorInMemory = null;
-});
+};
+
+const handleDecimalClick = () => {
+  const currentValueString = getValueAsString();
+  if (!currentValueString.includes('.')) {
+    setStringAsValue(currentValueString + '.');
+  }
+};
+
+const handlePercentClick = () => {
+  const currentValueNumber = getValueAsNumber();
+  const newValueNumber = currentValueNumber / 100;
+  setStringAsValue(newValueNumber.toString());
+  valueStringInMemory = null;
+  operatorInMemory = null;
+};
+
+// Add EventListeners to functions
+acElement.addEventListener('click', handleACClick);
 pmElement.addEventListener('click', () => {
   const currentValueNumber = getValueAsNumber();
   const currentValueString = getValueAsString();
@@ -113,13 +137,7 @@ pmElement.addEventListener('click', () => {
     setStringAsValue(currentValueString.substring(1));
   }
 });
-percentElement.addEventListener('click', () => {
-  const currentValueNumber = getValueAsNumber();
-  const newValueNumber = currentValueNumber / 100;
-  setStringAsValue(newValueNumber.toString());
-  valueStringInMemory = null;
-  operatorInMemory = null;
-});
+percentElement.addEventListener('click', handlePercentClick);
 
 
 // Add EventListeners to operators
@@ -136,11 +154,7 @@ divisionElement.addEventListener('click', () => {
   handleOperatorClick('division');
 });
 equalElement.addEventListener('click', () => {
-  if (valueStringInMemory) {
-    setStringAsValue(getResultOfOperationAsString());
-    valueStringInMemory = null;
-    operatorInMemory = null;
-  }
+  handleEqualClick();
 });
 
 
@@ -151,10 +165,28 @@ for (let i = 0; i < numberElementArray.length; i++) {
     handleNumberClick(numberElement.textContent);
   });
 }
-decimalElement.addEventListener('click', () => {
-  const currentValueString = getValueAsString();
-  if (!currentValueString.includes('.')) {
-    setStringAsValue(currentValueString + '.');
+decimalElement.addEventListener('click', handleDecimalClick);
+
+// [Extra1] Add EventListeners for key events
+document.addEventListener('keyup', event => {
+  if (/^[0-9]$/.test(event.key)) {
+    handleNumberClick(event.key);
+  } else if (event.key === '+') {
+    handleOperatorClick('addition');
+  } else if (event.key === '-') {
+    handleOperatorClick('subtraction');
+  } else if (event.key === '*') {
+    handleOperatorClick('multiplication');
+  } else if (event.key === '/') {
+    handleOperatorClick('division');
+  } else if (event.key === '=' || event.key === 'Enter') {
+    handleEqualClick();
+  } else if (event.key === 'Escape') {
+    handleACClick();
+  } else if (event.key === '.') {
+    handleDecimalClick();
+  } else if (event.key === '%') {
+    handlePercentClick();
   }
 });
 
